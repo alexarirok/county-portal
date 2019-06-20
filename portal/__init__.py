@@ -12,8 +12,8 @@ def create_app(test_config=None):
         app.config.from_pyfile("config.py", silent=True)
     else:
         # load test config if passed in
-        app.config.from_mapping(test_config)
-
+        #app.config.from_mapping(test_config)
+        app.config.update(test_config)
     #ensure instance folder exists
     try:
         os.makedirs(app.instance_path)
@@ -24,14 +24,20 @@ def create_app(test_config=None):
     @app.route('/hello')
     def hello():
         return "Hello you!"
-    return app
-    def create_app():
-        app = ...
+    #return app
+    #def create_app():
+        #app = ...
     # existing code omitted
-        from . import db
-        db.init_app(app)
 
-        from . import auth
-        app.register_blueprint(auth.pd)
+    #register the db commands
+    from portal import db
+    db.init_app(app)
 
-        return app
+    # apply the blueprint to the app
+    from portal import auth
+    app.register_blueprint(auth.bp)
+
+    from portal import blog
+    app.register_blueprint(blog.bp)
+    app.add_url_rule('/', endpoint='index')
+    return app

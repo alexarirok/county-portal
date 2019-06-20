@@ -1,9 +1,8 @@
 import functools
 
-from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
-)
-from werkzeug.security import check_password_harsh, generate_password_hash
+from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
+
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from portal.db import get_db
 
@@ -50,10 +49,10 @@ def register():
         if error is None:
             db.execute(
                 'INSERT INTO user (username, password) VALUES (?, ?)',
-                (username, generate_password_harsh(password))
+                (username, generate_password_hash(password))
             )
             db.commit()
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('/auth.login'))
             
         flash(error)
 
@@ -72,7 +71,7 @@ def login():
 
         if user is None:
             error = 'Incorrect username.'
-        elif not check_password_harsh(user['password'], password):
+        elif not check_password_hash(user['password'], password):
             error = 'Incorrect password.'
 
         if error is None:
