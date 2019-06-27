@@ -18,7 +18,7 @@ def index():
 
 def get_post(id, check_author=True):
     post = get_db().execute(
-        ' SELECT p.id, title, body, created, author_id, username'
+        ' SELECT p.id, tittle, body, created, author_id, username'
         ' FROM post p JOIN users u ON p.author_id = u.id'
         ' WHERE p.id = ?',
         (id,)
@@ -32,15 +32,15 @@ def get_post(id, check_author=True):
 
     return post
 
-@bp.route('/create', methods=(['GET', 'POST']))
+@bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
     if request.method == 'POST':
-        title = request.form['title']
+        tittle = request.form['tittle']
         body = request.form['body']
         error = None
 
-        if not title:
+        if not tittle:
             error = 'Title is required'
 
         if error is not None:
@@ -48,9 +48,9 @@ def create():
         else:
             db = get_db()
             db.execute(
-                'INSERT INTO post (title, body, author_id)'
-                ' VALUE (?, ?, ?)',
-                (title, body, g.user['id'])
+                'INSERT INTO post (tittle, body, author_id)'
+                'VALUES (?, ?, ?)',
+                (tittle, body, g.user['id'])
             )
             db.commit()
             return redirect(url_for('blog.index'))
@@ -63,21 +63,21 @@ def update(id):
     post = get_post(id)
 
     if request.method == 'POST':
-        title = request.form['title']
+        tittle = request.form['tittle']
         body = request.form['body']
         error = None
 
-        if not title:
-            error = 'Title is required.'
+        if not tittle:
+            error = 'Tittle is required.'
 
         if error is not None:
             flash(error)
         else:
             db = get_db()
             db.execute(
-                ' UPDATE post SET title = ?, body = ?'
+                ' UPDATE post SET tittle = ?, body = ?'
                 ' WHERE id = ?',
-                (title, body, id)
+                (tittle, body, id)
             )
             db.commit()
             return redirect(url_for('blog.index'))
